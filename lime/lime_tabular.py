@@ -9,6 +9,7 @@ import warnings
 
 import numpy as np
 import scipy as sp
+import pandas as pd
 import sklearn
 import sklearn.preprocessing
 from sklearn.utils import check_random_state
@@ -195,7 +196,7 @@ class LimeTabularExplainer(object):
         self.categorical_names = categorical_names or {}
         self.sample_around_instance = sample_around_instance
         self.training_data_stats = training_data_stats
-        self.model_needs_colnames = validate_model_needs_colnames(model_needs_colnames, feature_names)
+        self.model_needs_colnames = self.validate_model_needs_colnames(model_needs_colnames, feature_names)
 
         # Check and raise proper error in stats are supplied in non-descritized path
         if self.training_data_stats:
