@@ -291,7 +291,7 @@ class LimeTabularExplainer(object):
         return ['%.2f' % v for v in values]
 
     @staticmethod
-    def validate_model_needs_colnames(model_needs_colnames, feature_names)
+    def validate_model_needs_colnames(model_needs_colnames, feature_names):
         if model_needs_colnames and feature_names is None:
             raise AttributeError('model_needs_colnames needs the attriute feature_names to be set')
         else:
