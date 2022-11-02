@@ -139,7 +139,8 @@ class LimeTabularExplainer(object):
                  discretizer='quartile',
                  sample_around_instance=False,
                  random_state=None,
-                 training_data_stats=None):
+                 training_data_stats=None,
+                 model_needs_colnames=False):
         """Init function.
 
         Args:
@@ -185,12 +186,16 @@ class LimeTabularExplainer(object):
                 if discretize_continuous is True. Must have the following keys:
                 means", "mins", "maxs", "stds", "feature_values",
                 "feature_frequencies"
+            model_needs_colnames: Ensures a named dataset is passed into the predict
+                function. Requires `feature_names` to be set. To be used for SKLearn 
+                Pipelines that depend on a dataset with named columns for feature preprocessing.
         """
         self.random_state = check_random_state(random_state)
         self.mode = mode
         self.categorical_names = categorical_names or {}
         self.sample_around_instance = sample_around_instance
         self.training_data_stats = training_data_stats
+        self.model_needs_colnames = validate_model_needs_colnames(model_needs_colnames, feature_names)
 
         # Check and raise proper error in stats are supplied in non-descritized path
         if self.training_data_stats:
@@ -285,6 +290,14 @@ class LimeTabularExplainer(object):
     def convert_and_round(values):
         return ['%.2f' % v for v in values]
 
+    @staticmethod
+    def validate_model_needs_colnames(model_needs_colnames, feature_names)
+        if model_needs_colnames and feature_names is None:
+            raise AttributeError('model_needs_colnames needs the attriute feature_names to be set')
+        else:
+            return model_needs_colnames
+        
+    
     @staticmethod
     def validate_training_data_stats(training_data_stats):
         """
@@ -575,6 +588,8 @@ class LimeTabularExplainer(object):
         if self.discretizer is not None:
             inverse[1:] = self.discretizer.undiscretize(inverse[1:])
         inverse[0] = data_row
+        if self.model_needs_colnames:
+            inverse = pd.DataFrame(inverse, columns=self.feature_names)
         return data, inverse
 
 
